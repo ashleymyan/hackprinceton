@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ProfileScreen from './screens/ProfileScreen';
 import MapScreen from './screens/MapScreen';
+import WelcomeScreen from './screens/welcome';
+import SignupScreen from './screens/signup';
+import LoginScreen from './screens/login';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-// const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function MyTabs() {
@@ -18,19 +21,23 @@ function MyTabs() {
 }
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        {!isLoggedIn ? (
+          <>
+            <Stack.Screen name="Welcome" component={WelcomeScreen} />
+            <Stack.Screen name="Login">
+              {props => <LoginScreen {...props} onLogin={() => setIsLoggedIn(true)} />}
+            </Stack.Screen>
+            <Stack.Screen name="Signup" component={SignupScreen} />
+          </>
+        ) : (
+          <Stack.Screen name="MyTabs" component={MyTabs} options={{ headerShown: false }} />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'red',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
