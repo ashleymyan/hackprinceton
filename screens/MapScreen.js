@@ -2,9 +2,11 @@ import React from 'react'
 import MapView from 'react-native-maps';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Switch, ScrollView} from 'react-native'
 import { Marker, Callout } from 'react-native-maps';
+import { CurrentRenderContext } from '@react-navigation/native';
 
 
-const MapScreen = () => {
+
+const MapScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handleTagToggle }) => {
     const initialRegion = {
         latitude: 39.952217, 
         longitude: -75.193214, 
@@ -28,7 +30,14 @@ const MapScreen = () => {
 
     return (
         <View style={styles.container}>
+          
           <Text style={styles.textAboveMap}>Find your friends!</Text>
+
+          {isAvailable && 
+          <View>
+          <Text style={styles.tagText}> You are currently: {tags.filter((tag) => tag.active).map((tag) => tag.label).join(', ')}</Text>
+          </View>
+          }
           <MapView
             style={styles.map}
             initialRegion={initialRegion}
@@ -56,10 +65,15 @@ const MapScreen = () => {
               </Marker>
             ))}
           </MapView>
-            <Text style={styles.bulletList}>{'Friend Statuses'}</Text>
-            <ScrollView style={styles.scrollContainer}>
-                <Text style={styles.bulletList}>{locationInfo.join('\n')}</Text>
-            </ScrollView>
+            {isAvailable &&  
+            <View style = {styles.bulletContainer}> 
+              <Text style={styles.bulletList}>{'Friend Statuses'}</Text>
+              <ScrollView style={styles.scrollContainer}>
+                  <Text style={styles.bulletList}>{locationInfo.join('\n')}</Text>
+              </ScrollView>
+              </View>
+            }
+
         </View>
       );
 
@@ -68,22 +82,33 @@ const MapScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundcolor: 'white',
-        justifyContent: 'center', // Center vertically
+        backgroundColor: 'white',
+        justifyContent: 'flex-start', // Center vertically
         alignItems: 'center',     // Center horizontally
     },
     map: {
         width: '100%',
-        height: '60%',
+        height: '50%',
+        marginTop: 10,
     }, 
     textAboveMap: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginTop: 30,
-        marginBottom: 15,
+        marginTop: 15,
     },
+    tagText: {
+      fontSize: 16, 
+      marginTop: 5,
+
+    },
+    bulletContainer: {
+      width: '100%',
+      marginLeft: 50,
+      flex: 1,
+    },
+
     bulletList: {
-        fontSize: 16,
+        fontSize: 14,
         marginTop: 20,
     },
     calloutContainer: {
@@ -92,6 +117,11 @@ const styles = StyleSheet.create({
     },
     calloutWithImage: {
         height: 200,
+    },
+    scrollContainer: {
+      width: '100%'
+   
+      
     },
 })
 

@@ -11,17 +11,62 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function MyTabs() {
+
+function MyTabs( {route, navigation} ) {
+  const [isAvailable, setIsAvailable] = useState(false);
+
+  const tagsData = [
+    { key: 'studying', label: 'Studying', active: false },
+    { key: 'eating', label: 'Eating', active: false},
+    { key: 'workingOut', label:'Working Out', active: false},
+  ];
+
+  const [tags, setTags] = useState(tagsData);
+
+  const handleTagToggle = (tagKey) => {
+    setTags((prevTags) => 
+    prevTags.map((tag) => 
+    tag.key === tagKey ? {...tag, active: !tag.active } : tag));
+  }
+
+  const setIsAvailableInTabs = (value) => {
+    setIsAvailable(value);
+  };
+  
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-      <Tab.Screen name="Map" component={MapScreen} />
+      <Tab.Screen name="Profile">
+        {props => (
+          <ProfileScreen
+            {...props}
+            isAvailable={isAvailable}
+            setIsAvailableInTabs={setIsAvailableInTabs}
+            tags={tags}
+            setTags={setTags}
+            handleTagToggle={handleTagToggle}
+          />
+        )}
+      </Tab.Screen>
+      <Tab.Screen name="Map">
+        {props => (
+          <MapScreen
+            {...props}
+            isAvailable={isAvailable}
+            setIsAvailableInTabs={setIsAvailableInTabs}
+            tags={tags}
+            setTags={setTags}
+            handleTagToggle={handleTagToggle}
+          />
+        )}
+      </Tab.Screen>
     </Tab.Navigator>
   );
+
 }
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(false);
 
   return (
     <NavigationContainer>
@@ -40,4 +85,5 @@ export default function App() {
       </Stack.Navigator>
     </NavigationContainer>
   );
+
 }
