@@ -1,24 +1,11 @@
 import React, { useState } from 'react'
 import { View, Text, Image, StyleSheet, TouchableOpacity, Switch} from 'react-native'
 
-const ProfileScreen = () => {
 
-    const [isAvailable, setIsAvailable] = useState(false);
+const ProfileScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handleTagToggle }) => {
+
     const userName = '[Name]';
 
-    const tagsData = [
-        {key: 'studying', label: 'Studying', active: false },
-        { key: 'eating', label: 'Eating', active: false},
-        { key: 'workingOut', label:'Working Out', active: false},
-    ];
-
-    const [tags, setTags] = useState(tagsData);
-
-    const handleTagToggle = (tagKey) => {
-        setTags((prevTags) => 
-        prevTags.map((tag) => 
-        tag.key === tagKey ? {...tag, active: !tag.active } : tag));
-    }
 
     const renderActiveTags = () => {
         return (
@@ -59,27 +46,28 @@ const ProfileScreen = () => {
 
 
     return (
-        <View style={styles.container}>
-            <View style={styles.topContainer}>
-                <Text style={styles.greetingText}>
-                    Hi, { userName }!
-                </Text>
-            </View>
-            <View style={styles.bottomContainer}>
-                <Text style={styles.profileText}> 
-                        Status: {isAvailable ? 'Available 😎' : 'Busy 😴'}
-                </Text>
-                <Switch
-                    value={isAvailable}
-                    onValueChange={(value) => setIsAvailable(value)}
-                    style={styles.statusToggle}
-                />
-            
-                {isAvailable && 
-                    renderAvailableSettings()
-                }
-            </View>
-        </View>
+            <View style={styles.container}>
+                <View style={styles.topContainer}>
+                    <Text style={styles.greetingText}>
+                        Hi, { userName }!
+                    </Text>
+                </View>
+                <View style={styles.bottomContainer}>
+                    <Text style={styles.profileText}> 
+                            Status: {isAvailable ? 'Available 😎' : 'Busy 😴'}
+                    </Text>
+                    <Switch
+                        value={isAvailable}
+                        onValueChange={(value) => setIsAvailableInTabs(value)}
+                        style={styles.statusToggle}
+                    />
+                
+                    {isAvailable && 
+                        renderAvailableSettings()
+                    }
+                </View>
+            </View>   
+    
     );
 };
 
