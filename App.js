@@ -10,7 +10,7 @@ import LoginScreen from './screens/login';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { db, auth } from './firebaseConfig';
 import { doc, getDoc } from "firebase/firestore";
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -38,7 +38,14 @@ function MyTabs( {route, navigation} ) {
 
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Profile">
+      <Tab.Screen 
+        name="Profile"
+        options= {{ 
+          tabBarIcon: ({ color, size }) => (
+            <Icon name ="person" color={color} size = {size} />
+          ),
+        }}
+        >
         {props => (
           <ProfileScreen
             {...props}
@@ -50,7 +57,14 @@ function MyTabs( {route, navigation} ) {
           />
         )}
       </Tab.Screen>
-      <Tab.Screen name="Map">
+      <Tab.Screen 
+        name="Map"
+        options= {{ 
+          tabBarIcon: ({ color, size }) => (
+            <Icon name ="map" color={color} size = {size} />
+          ),
+        }}
+        >
         {props => (
           <MapScreen
             {...props}
@@ -62,7 +76,14 @@ function MyTabs( {route, navigation} ) {
           />
         )}
       </Tab.Screen>
-      <Tab.Screen name="Friends">
+      <Tab.Screen 
+        name="Friends"
+        options= {{ 
+          tabBarIcon: ({ color, size }) => (
+            <Icon name ="people" color={color} size = {size} />
+          ),
+        }}
+        >
         {props => (
           <AddFriendsScreen/>
         )}

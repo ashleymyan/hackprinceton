@@ -7,13 +7,13 @@ import {doc, getDoc} from "firebase/firestore";
 const ProfileScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handleTagToggle }) => {
 
 
-    const [name, setName] = userState('')
+    const [name, setName] = useState('')
 
 
     const renderActiveTags = () => {
         return (
             <View style={styles.tagContainer}> 
-            <Text style={styles.tagText}> Currently: {tags.filter((tag) => tag.active).map((tag) => tag.label).join(', ')}</Text>
+            <Text style={styles.tagText}> Current Status: {tags.filter((tag) => tag.active).map((tag) => tag.label).join(', ')}</Text>
             </View>
         );
     };
@@ -24,11 +24,8 @@ const ProfileScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handl
                 <View style={styles.availableSettings}>
 
                     {renderActiveTags()}
-
-                    <TouchableOpacity 
-                        style={styles.button} 
-                        onPress = {() => handleTagToggle('studying')}
-                        activeOpacity={0.8}
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={styles.button} onPress = {() => handleTagToggle('studying')}
                     >
                         <Text>Studying</Text>
                     </TouchableOpacity>
@@ -40,6 +37,11 @@ const ProfileScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handl
                     <TouchableOpacity style={styles.button} onPress = {() => handleTagToggle('workingOut')}>
                         <Text>Working Out</Text>
                     </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.button} onPress = {() => handleTagToggle('workingOut')}>
+                        <Text>Chilling</Text>
+                    </TouchableOpacity>
+                </View>
 
                 </View>
             );
@@ -66,6 +68,8 @@ const ProfileScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handl
 
 
 
+
+
     return (
             <View style={styles.container}>
                 <View style={styles.topContainer}>
@@ -88,7 +92,6 @@ const ProfileScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handl
                     }
                 </View>
             </View>   
-    
     );
 };
 
@@ -97,7 +100,7 @@ const ProfileScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handl
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#d3d3d3',
+        backgroundColor: '#BEDEF3',
         },
     topContainer: {
         flex: 1,
@@ -129,7 +132,7 @@ const styles = StyleSheet.create({
     },
     statusToggle: {
         marginTop: 16,
-        marginBottom: 16,
+        marginBottom: 30,
         transform: [{ scaleX: 1.3 }, { scaleY: 1.25}],
     },
 
@@ -140,7 +143,13 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: 'lightblue',
         padding: 8,
-        marginVertical: 4,
+        marginLeft: 5,
+        marginRight: 5,
+        marginTop: 10,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        
     },
     activeButton: {
         backgroundColor: 'blue',

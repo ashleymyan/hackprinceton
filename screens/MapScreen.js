@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import MapView from 'react-native-maps';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Switch, ScrollView} from 'react-native'
+import { View, Text, Image, StyleSheet, TouchableOpacity, Switch, ScrollView, FlatList} from 'react-native'
 import { Marker, Callout } from 'react-native-maps';
 import { CurrentRenderContext } from '@react-navigation/native';
 import * as Location from 'expo-location';
@@ -60,17 +60,17 @@ const MapScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handleTag
             showsUserLocation={true}
             followsUserLocation={true}
           >
-            {/* {currentLocation && (
+            {isAvailable && currentLocation && (
               <Marker
               coordinate={{
                 latitude: currentLocation.latitude,
                 longitude: currentLocation.longitude, // lowkey no need for ur own pin
               }}
               title="My location"
-              description="I am indeed here"
+              description= {tags.filter((tag) => tag.active).map((tag) => tag.label).join(', ')}
               pinColor="blue"
               />
-            )} */}
+            )}
             {locations.map((location) => (
               <Marker
                 key={location.id}
@@ -79,26 +79,49 @@ const MapScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handleTag
                     latitude: location.coordinate.latitude + Math.random() * 0.0001, // Adjust this value for the desired offset
                     longitude: location.coordinate.longitude + Math.random() * 0.0001, // Adjust this value for the desired offset
                 }}
-                title={location.title}
-                description={`Your friend ${location.userName} is at ${location.locationName}`}
+                // title={location.title}
+                // description={`Your friend ${location.userName} is at ${location.locationName}`}
               >
                 {/* <Callout style={styles.calloutContainer}> */}
                 <Callout style={[styles.calloutContainer, location.image && styles.calloutWithImage]}>
                     <View>
-                        <Text>{`Your friend ${location.userName} is at ${location.locationName}!`}</Text>
+                        <Text style={styles.tagText}>{`Your friend ${location.userName} is at ${location.locationName}!`}</Text>
                         {location.image && <Image source={location.image} style={{ width: 150, height: 150 }} />}
                     </View>
                 </Callout>
               </Marker>
             ))}
           </MapView>
-             
-            <View style = {styles.bulletContainer}> 
+
+          <View style={styles.bulletContainer}>
+            <Text style={styles.bulletList}>{'Friend Statuses'}</Text>
+            <ScrollView style={styles.scrollContainer}>
+              <FlatList
+                data={locations}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <View style={styles.bulletItemContainer}>
+                    <Text style={styles.nameItem}>{item.userName}</Text>
+                    <Text style={styles.bulletItem}>@{item.locationName}: {item.message}</Text>
+                    <TouchableOpacity
+                      style={styles.nudgeButton}
+                      onPress={() => handleNudgeFriend(item.id)}
+                    >
+                      <Text style={styles.buttonText}>Nudge</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              />
+            </ScrollView>
+          </View>
+
+            
+            {/* <View style = {styles.bulletContainer}> 
               <Text style={styles.bulletList}>{'Friend Statuses'}</Text>
               <ScrollView style={styles.scrollContainer}>
                   <Text style={styles.bulletList}>{locationInfo.join('\n')}</Text>
               </ScrollView>
-              </View>
+            </View> */}
             
 
         </View>
@@ -147,9 +170,34 @@ const styles = StyleSheet.create({
     },
     scrollContainer: {
       width: '100%'
-   
-      
     },
+    bulletItemContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between', 
+      alignItems: 'center', 
+      marginBottom: 10,
+      marginTop: 8,
+    },
+    nameItem: {
+      fontSize: 14,
+    },
+    bulletItem: {
+      fontSize: 12, 
+      marginRight: 10,
+    },
+    nudgeButton: {
+      backgroundColor: '#1C9BF5',
+      borderRadius: 5,
+      paddingVertical: 8,
+      paddingHorizontal: 12,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    buttonText: {
+      color: 'white',
+      fontSize: 14,
+    }
+
 })
 
 export default MapScreen;

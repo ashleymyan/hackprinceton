@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -8,14 +8,46 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
+
+
 
 const AddFriends = () => {
   const [people, setPeople] = useState([
-    { id: '1', name: 'John Doe', profileImage: 'https://images.squarespace-cdn.com/content/v1/6204821bfe06b76898b431c5/1660858625934-ZVWEMZYZHLWTVCXC19E3/Brandon+Andre+-+Headshot+Los+Angeles+na4-3.jpg' },
-    { id: '2', name: 'Jane Smith', profileImage: 'https://www.unh.edu/unhtoday/sites/default/files/styles/article_huge/public/article/2019/professional_woman_headshot.jpg?itok=3itzxHXh' },
-    { id: '3', name: 'Alice Johnson', profileImage: 'https://images.squarespace-cdn.com/content/v1/5cfb0f8783523500013c5639/f8715acd-a389-4d3f-8b8d-b5c6041ced87/Professional-Headshot-Vancouver?format=500w' },
-    // Add more people as needed
+    // { id: '1', name: 'John Doe', profileImage: 'https://images.squarespace-cdn.com/content/v1/6204821bfe06b76898b431c5/1660858625934-ZVWEMZYZHLWTVCXC19E3/Brandon+Andre+-+Headshot+Los+Angeles+na4-3.jpg' },
+    // { id: '2', name: 'Jane Smith', profileImage: 'https://www.unh.edu/unhtoday/sites/default/files/styles/article_huge/public/article/2019/professional_woman_headshot.jpg?itok=3itzxHXh' },
+    // { id: '3', name: 'Alice Johnson', profileImage: 'https://images.squarespace-cdn.com/content/v1/5cfb0f8783523500013c5639/f8715acd-a389-4d3f-8b8d-b5c6041ced87/Professional-Headshot-Vancouver?format=500w' },
+    // // Add more people as needed
   ]);
+  const [filteredPeople, setFilteredPeople] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
+
+  useEffect(() => {
+    const fetchPeople = async () => {
+      try {
+        const usersRef = collection(db, 'users');
+        const usersSnapshot = await getDocs(usersRef);
+        
+        const usersData = usersSnapshot.docs.map(doc => doc.data());
+        setPeople(usersData);
+      } catch (error) {
+        console.error('Error fetching people', error);
+      }
+    };
+  
+    fetchPeople();
+  }, []);
+  
+
+  useEffect(() => {
+    const filtered = people.filter((person) => 
+      person.email.toLowerCase() === searchQuery.toLowerCase()
+    );
+    setFilteredPeople(filtered);
+  }, [searchQuery, people]);
+  
 
   const [friendRequests, setFriendRequests] = useState([
     { id: '4', name: 'Bob Johnson', profileImage: 'https://www.cityheadshots.com/uploads/5/1/2/1/5121840/editor/mjb-2465.jpg?1643119031' },
@@ -28,19 +60,16 @@ const AddFriends = () => {
     console.log(`Added friend with ID: ${personId}`);
   };
 
-  const [searchQuery, setSearchQuery] = useState('');
 
   // Filter the people based on the search query
-  const filteredPeople = people.filter((person) =>
-    person.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+
 
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>Add Friends</Text>
       <TextInput
         style={styles.searchInput}
-        placeholder="Search by name"
+        placeholder="Search by Email"
         value={searchQuery}
         onChangeText={(text) => setSearchQuery(text)}
       />
@@ -49,11 +78,12 @@ const AddFriends = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.personContainer}>
-            <Image
+            {/* <Image
               source={{ uri: item.profileImage }}
               style={styles.profileImage}
-            />
+            /> */}
             <Text style={styles.personName}>{item.name}</Text>
+            <Text style={styles.personEmail}>{item.email}</Text>
             <TouchableOpacity
               style={styles.customButton}
               onPress={() => handleAddFriend(item.id)}
@@ -123,6 +153,9 @@ const styles = StyleSheet.create({
   personName: {
     fontSize: 16,
     textAlign: 'left',
+  },
+  personEmail: {
+    fontSize: 10,
   },
   customButton: {
     backgroundColor: '#1C9BF5',
