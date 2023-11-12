@@ -9,19 +9,37 @@ import {
   TextInput,
 } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { db, auth } from '../firebaseConfig';
 
 
 
 const AddFriends = () => {
-  const [people, setPeople] = useState([
-    // { id: '1', name: 'John Doe', profileImage: 'https://images.squarespace-cdn.com/content/v1/6204821bfe06b76898b431c5/1660858625934-ZVWEMZYZHLWTVCXC19E3/Brandon+Andre+-+Headshot+Los+Angeles+na4-3.jpg' },
-    // { id: '2', name: 'Jane Smith', profileImage: 'https://www.unh.edu/unhtoday/sites/default/files/styles/article_huge/public/article/2019/professional_woman_headshot.jpg?itok=3itzxHXh' },
-    // { id: '3', name: 'Alice Johnson', profileImage: 'https://images.squarespace-cdn.com/content/v1/5cfb0f8783523500013c5639/f8715acd-a389-4d3f-8b8d-b5c6041ced87/Professional-Headshot-Vancouver?format=500w' },
-    // // Add more people as needed
-  ]);
-  const [filteredPeople, setFilteredPeople] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+const [name, setName] = useState('')
+const [friendsArray, setFriendsArray] = useState([]);
+const [people, setPeople] = useState([]);
+const [filteredPeople, setFilteredPeople] = useState([]);
+const [searchQuery, setSearchQuery] = useState('');
+
+
+
+useEffect(() => {
+  const fetchUserName = async () => {
+      const user = auth.currentUser;
+      if (user) {
+          const userDocRef = doc(db, "users", user.uid);
+          const userDocSnap = await getDoc(userDocRef);
+          if (userDocSnap.exists()) {
+              const userData = userDocSnap.data();
+              setName(userData.name);
+              setFriendsArray(userData.friends || []);
+          } else {
+              console.log("No such document!");
+          }
+      }
+  };
+
+  fetchUserName();
+}, []);
 
 
   useEffect(() => {
@@ -111,6 +129,17 @@ const AddFriends = () => {
             >
               <Text style={styles.buttonText}>Accept</Text>
             </TouchableOpacity>
+          </View>
+        )}
+      />
+      <Text style={styles.headerText}>My Friends</Text>
+      <FlatList
+        data={friendsArray}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.friendContainer}>
+            <Text style={styles.personName}>{item.name}</Text>
+            
           </View>
         )}
       />

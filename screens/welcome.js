@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 const Welcome = ({ navigation }) => {
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Welcome to FriendLocator</Text>
+            <Text style={styles.title}>Welcome to Loc8</Text>
             <Text>The best way to find your friends on campus!</Text>
             <Button title="Create Account" onPress={() => navigation.navigate('Signup')} />
             <Button title="Log In" onPress={() => navigation.navigate('Login')} />
