@@ -13,18 +13,24 @@
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
     "expo": "^49.0.18",
+    "expo-location": "^16.3.0",
     "expo-status-bar": "~1.6.0",
     "firebase": "^10.6.0",
     "react": "18.2.0",
     "react-native": "0.72.6",
-    "react-native-image-picker": "^7.0.2",
-    "react-native-maps": "^1.8.0",
-    "react-native-safe-area-context": "^4.6.3",
-    "react-native-screens": "^3.22.0"
+    "react-native-maps": "1.7.1",
+    "react-native-safe-area-context": "^4.7.4",
+    "react-native-screens": "^3.27.0",
+    "react-native-vector-icons": "^10.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "@expo/ngrok": "^4.1.1"
+    "@expo/ngrok": "^4.1.1",
+    "yarn": "^1.22.19"
   },
-  "private": true
+  "private": true,
+  "description": "Run app by calling command -npx expo start If it doesn't work, try -npx expo start --tunnel",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

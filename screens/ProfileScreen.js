@@ -1,26 +1,14 @@
-import React, { useState, useEffect } from 'react'
-import { View, Text, Image, StyleSheet, TouchableOpacity, Switch } from 'react-native'
-import { db, auth } from '../firebaseConfig';
-import { doc, getDoc } from "firebase/firestore";
+import React, { useState, useEffect} from 'react'
+import { View, Text, Image, StyleSheet, TouchableOpacity, Switch} from 'react-native'
+import { db, auth } from '../firebaseConfig'
+import {doc, getDoc} from "firebase/firestore";
 
-const ProfileScreen = () => {
-    const [name, setName] = useState('');
 
-    const [isAvailable, setIsAvailable] = useState(false);
+const ProfileScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handleTagToggle }) => {
 
-    const tagsData = [
-        {key: 'studying', label: 'Studying', active: false },
-        { key: 'eating', label: 'Eating', active: false},
-        { key: 'workingOut', label:'Working Out', active: false},
-    ];
 
-    const [tags, setTags] = useState(tagsData);
+    const [name, setName] = userState('')
 
-    const handleTagToggle = (tagKey) => {
-        setTags((prevTags) => 
-        prevTags.map((tag) => 
-        tag.key === tagKey ? {...tag, active: !tag.active } : tag));
-    }
 
     const renderActiveTags = () => {
         return (
@@ -77,28 +65,30 @@ const ProfileScreen = () => {
     }, []);
 
 
+
     return (
-        <View style={styles.container}>
-            <View style={styles.topContainer}>
-                <Text style={styles.greetingText}>
-                    Hi, { name }!
-                </Text>
-            </View>
-            <View style={styles.bottomContainer}>
-                <Text style={styles.profileText}> 
-                        Status: {isAvailable ? 'Available 😎' : 'Busy 😴'}
-                </Text>
-                <Switch
-                    value={isAvailable}
-                    onValueChange={(value) => setIsAvailable(value)}
-                    style={styles.statusToggle}
-                />
-            
-                {isAvailable && 
-                    renderAvailableSettings()
-                }
-            </View>
-        </View>
+            <View style={styles.container}>
+                <View style={styles.topContainer}>
+                    <Text style={styles.greetingText}>
+                        Hi, { name }!
+                    </Text>
+                </View>
+                <View style={styles.bottomContainer}>
+                    <Text style={styles.profileText}> 
+                            Status: {isAvailable ? 'Available 😎' : 'Busy 😴'}
+                    </Text>
+                    <Switch
+                        value={isAvailable}
+                        onValueChange={(value) => setIsAvailableInTabs(value)}
+                        style={styles.statusToggle}
+                    />
+                
+                    {isAvailable && 
+                        renderAvailableSettings()
+                    }
+                </View>
+            </View>   
+    
     );
 };
 

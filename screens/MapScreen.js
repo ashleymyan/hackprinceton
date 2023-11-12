@@ -1,10 +1,28 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import MapView from 'react-native-maps';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Switch, ScrollView} from 'react-native'
 import { Marker, Callout } from 'react-native-maps';
+import { CurrentRenderContext } from '@react-navigation/native';
+import * as Location from 'expo-location';
 
 
-const MapScreen = () => {
+
+const MapScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handleTagToggle }) => {
+
+    const [currentLocation, setCurrentLocation] = useState(null);
+
+    useEffect(() => {
+      (async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.error('Permission to access location denied')
+          return;
+        }
+        let location = await Location.getCurrentPositionAsync({});
+        setCurrentLocation(location.coords);
+      })();
+    }, []);
+
     const initialRegion = {
         latitude: 39.952217, 
         longitude: -75.193214, 
@@ -13,7 +31,7 @@ const MapScreen = () => {
       };
 
     const locations = [
-        { id: 1, userName: 'Cindy', locationName: 'Quaker Kitchen', coordinate: { latitude: 39.954116446548966, longitude: -75.2025458341666 }, message: 'Eating dinner 🍽️' }, 
+        { id: 1, userName: 'Cindy', locationName: 'Quaker Kitchen', coordinate: { latitude: 39.954116446548966, longitude: -75.2025458341666 }, message: 'Eating dinner 🍽️', image: require('./images/dinner.jpeg') }, 
         { id: 2, userName: 'Ashley', locationName: 'Pottruck Gym', coordinate: { latitude: 39.95408373331323, longitude: -75.19694350348684 }, message: 'Arm day 💪🏽'},
         { id: 3, userName: 'Rachel', locationName: 'Van Pelt Library', coordinate: { latitude: 39.952921480923465, longitude: -75.19338647047526 }, message: 'Finance midterm 📚' }, 
         { id: 4, userName: 'Fiona', locationName: 'Van Pelt Library', coordinate: { latitude: 39.952921480923465, longitude: -75.19338647047526 }, message: 'Nets midterm 😵‍💫' }, 
@@ -28,13 +46,31 @@ const MapScreen = () => {
 
     return (
         <View style={styles.container}>
+          
           <Text style={styles.textAboveMap}>Find your friends!</Text>
+
+          {isAvailable && 
+          <View>
+          <Text style={styles.tagText}> You are currently: {tags.filter((tag) => tag.active).map((tag) => tag.label).join(', ')}</Text>
+          </View>
+          }
           <MapView
             style={styles.map}
             initialRegion={initialRegion}
             showsUserLocation={true}
             followsUserLocation={true}
           >
+            {/* {currentLocation && (
+              <Marker
+              coordinate={{
+                latitude: currentLocation.latitude,
+                longitude: currentLocation.longitude, // lowkey no need for ur own pin
+              }}
+              title="My location"
+              description="I am indeed here"
+              pinColor="blue"
+              />
+            )} */}
             {locations.map((location) => (
               <Marker
                 key={location.id}
@@ -56,10 +92,15 @@ const MapScreen = () => {
               </Marker>
             ))}
           </MapView>
-            <Text style={styles.bulletList}>{'Friend Statuses'}</Text>
-            <ScrollView style={styles.scrollContainer}>
-                <Text style={styles.bulletList}>{locationInfo.join('\n')}</Text>
-            </ScrollView>
+             
+            <View style = {styles.bulletContainer}> 
+              <Text style={styles.bulletList}>{'Friend Statuses'}</Text>
+              <ScrollView style={styles.scrollContainer}>
+                  <Text style={styles.bulletList}>{locationInfo.join('\n')}</Text>
+              </ScrollView>
+              </View>
+            
+
         </View>
       );
 
@@ -68,22 +109,33 @@ const MapScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundcolor: 'white',
-        justifyContent: 'center', // Center vertically
+        backgroundColor: 'white',
+        justifyContent: 'flex-start', // Center vertically
         alignItems: 'center',     // Center horizontally
     },
     map: {
         width: '100%',
-        height: '60%',
+        height: '50%',
+        marginTop: 10,
     }, 
     textAboveMap: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginTop: 30,
-        marginBottom: 15,
+        marginTop: 15,
     },
+    tagText: {
+      fontSize: 16, 
+      marginTop: 5,
+
+    },
+    bulletContainer: {
+      width: '100%',
+      marginLeft: 50,
+      flex: 1,
+    },
+
     bulletList: {
-        fontSize: 16,
+        fontSize: 14,
         marginTop: 20,
     },
     calloutContainer: {
@@ -92,6 +144,11 @@ const styles = StyleSheet.create({
     },
     calloutWithImage: {
         height: 200,
+    },
+    scrollContainer: {
+      width: '100%'
+   
+      
     },
 })
 

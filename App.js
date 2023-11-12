@@ -10,11 +10,12 @@ import LoginScreen from './screens/login';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { db, auth } from './firebaseConfig';
 import { doc, getDoc } from "firebase/firestore";
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function MyTabs({ route, navigation }) {
+function MyTabs( {route, navigation} ) {
   const [isAvailable, setIsAvailable] = useState(false);
 
   const tagsData = [
@@ -68,6 +69,7 @@ function MyTabs({ route, navigation }) {
       </Tab.Screen>
     </Tab.Navigator>
   );
+
 }
 
 export default function App() {
@@ -109,4 +111,5 @@ export default function App() {
       </Stack.Navigator>
     </NavigationContainer>
   );
+
 }
