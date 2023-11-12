@@ -1,12 +1,28 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import MapView from 'react-native-maps';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Switch, ScrollView} from 'react-native'
 import { Marker, Callout } from 'react-native-maps';
 import { CurrentRenderContext } from '@react-navigation/native';
+import * as Location from 'expo-location';
 
 
 
 const MapScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handleTagToggle }) => {
+
+    const [currentLocation, setCurrentLocation] = useState(null);
+
+    useEffect(() => {
+      (async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.error('Permission to access location denied')
+          return;
+        }
+        let location = await Location.getCurrentPositionAsync({});
+        setCurrentLocation(location.coords);
+      })();
+    }, []);
+
     const initialRegion = {
         latitude: 39.952217, 
         longitude: -75.193214, 
@@ -44,6 +60,17 @@ const MapScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handleTag
             showsUserLocation={true}
             followsUserLocation={true}
           >
+            {/* {currentLocation && (
+              <Marker
+              coordinate={{
+                latitude: currentLocation.latitude,
+                longitude: currentLocation.longitude, // lowkey no need for ur own pin
+              }}
+              title="My location"
+              description="I am indeed here"
+              pinColor="blue"
+              />
+            )} */}
             {locations.map((location) => (
               <Marker
                 key={location.id}
@@ -65,14 +92,14 @@ const MapScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handleTag
               </Marker>
             ))}
           </MapView>
-            {isAvailable &&  
+             
             <View style = {styles.bulletContainer}> 
               <Text style={styles.bulletList}>{'Friend Statuses'}</Text>
               <ScrollView style={styles.scrollContainer}>
                   <Text style={styles.bulletList}>{locationInfo.join('\n')}</Text>
               </ScrollView>
               </View>
-            }
+            
 
         </View>
       );
