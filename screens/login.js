@@ -1,13 +1,41 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, Alert } from 'react-native';
+import { db, auth } from '../firebaseConfig';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 
-const Login = ({ onLogin }) => {
+const LoginScreen = ({ onLogin }) => {
+    const [currentUser, setCurrentUser] = useState(null);
+    
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogIn = () => {
-        // Add logic to handle account creation
-        onLogin();
+    const handleEmailChange = (text) => setEmail(text);
+    const handlePasswordChange = (text) => setPassword(text);
+
+    const handleLogin = async () => {
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+        
+            const userDocRef = doc(db, "users", user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+
+            if (userDocSnap.data() != undefined) {
+                setCurrentUser(userCredential.user);
+                onLogin();
+            } else {
+                console.log("User does not exist in Firestore");
+                Alert.alert(
+                    "Login Failed",
+                    "Couldn't log in with the provided credentials.",
+                    [{ text: "OK", onPress: () => console.log("OK Pressed") }],
+                    { cancelable: false }
+                );
+            }
+        } catch (error) {
+            console.error("Error logging in: ", error.message);
+        }
     };
 
     return (
@@ -16,7 +44,7 @@ const Login = ({ onLogin }) => {
             
             <TextInput
                 style={styles.input}
-                onChangeText={setEmail}
+                onChangeText={handleEmailChange}
                 value={email}
                 placeholder="Email"
                 keyboardType="email-address"
@@ -25,7 +53,7 @@ const Login = ({ onLogin }) => {
 
             <TextInput
                 style={styles.input}
-                onChangeText={setPassword}
+                onChangeText={handlePasswordChange}
                 value={password}
                 placeholder="Password"
                 secureTextEntry
@@ -33,7 +61,7 @@ const Login = ({ onLogin }) => {
 
             <Button 
                 title="Sign In" 
-                onPress={handleLogIn} 
+                onPress={handleLogin} 
             />
         </View>
     );
@@ -60,4 +88,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Login;
+export default LoginScreen;
