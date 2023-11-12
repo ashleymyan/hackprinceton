@@ -3,10 +3,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ProfileScreen from './screens/ProfileScreen';
 import MapScreen from './screens/MapScreen';
+import AddFriendsScreen from './screens/AddFriendsScreen';
 import WelcomeScreen from './screens/welcome';
 import SignupScreen from './screens/signup';
 import LoginScreen from './screens/login';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -57,6 +59,11 @@ function MyTabs( {route, navigation} ) {
             setTags={setTags}
             handleTagToggle={handleTagToggle}
           />
+        )}
+      </Tab.Screen>
+      <Tab.Screen name="Friends">
+        {props => (
+          <AddFriendsScreen/>
         )}
       </Tab.Screen>
     </Tab.Navigator>
