@@ -1,10 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect} from 'react'
 import { View, Text, Image, StyleSheet, TouchableOpacity, Switch} from 'react-native'
+import { db, auth } from '../firebaseConfig'
+import {doc, getDoc} from "firebase/firestore";
 
 
 const ProfileScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handleTagToggle }) => {
 
-    const userName = '[Name]';
+
+    const [name, setName] = userState('')
 
 
     const renderActiveTags = () => {
@@ -43,13 +46,31 @@ const ProfileScreen = ({ isAvailable, setIsAvailableInTabs, tags, setTags, handl
         }
     };
 
+    useEffect(() => {
+        const fetchUserName = async () => {
+            const user = auth.currentUser;
+            if (user) {
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                if (userDocSnap.data() != undefined) {
+                    const userData = userDocSnap.data();
+                    setName(userData.name);
+                } else {
+                    console.log("No such document!");
+                }
+            }
+        };
+
+        fetchUserName();
+    }, []);
+
 
 
     return (
             <View style={styles.container}>
                 <View style={styles.topContainer}>
                     <Text style={styles.greetingText}>
-                        Hi, { userName }!
+                        Hi, { name }!
                     </Text>
                 </View>
                 <View style={styles.bottomContainer}>
